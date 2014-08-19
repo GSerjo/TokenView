@@ -3,6 +3,7 @@ using System.Drawing;
 
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
+using NSTokenView;
 
 namespace Sample
 {
@@ -25,7 +26,14 @@ namespace Sample
 		public override void ViewDidLoad ()
 		{
 			base.ViewDidLoad ();
-			
+
+			tokenField.TokenDataSource = new TokenViewDataSource ();
+
+			tokenField.SetupInit ();
+			tokenField.Layer.CornerRadius = 5;
+			tokenField.Layer.BorderColor = UIColor.LightTextColor.CGColor;
+			tokenField.PlaceholderText = "Enter a token";
+
 			// Perform any additional setup after loading the view, typically from a nib.
 		}
 
@@ -50,6 +58,19 @@ namespace Sample
 		}
 
 		#endregion
+
+		public class TokenViewDataSource : TokenDataSource
+		{
+			public override string GetToken (TokenView tokenField, int index)
+			{
+				return string.Empty;
+			}
+
+			public override int NumberOfTokens (TokenView tokenField)
+			{
+				return 0;
+			}
+		}
+
 	}
 }
-

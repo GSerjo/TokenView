@@ -7,19 +7,26 @@
 using MonoTouch.Foundation;
 using System.CodeDom.Compiler;
 
-namespace Sample
+namespace NSTokenView
 {
-	[Register ("SampleViewController")]
-	partial class SampleViewController
+	partial class Token
 	{
 		[Outlet]
-		NSTokenView.TokenView tokenField { get; set; }
+		MonoTouch.UIKit.UIView backgroundView { get; set; }
+
+		[Outlet]
+		MonoTouch.UIKit.UILabel titleLabel { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
-			if (tokenField != null) {
-				tokenField.Dispose ();
-				tokenField = null;
+			if (titleLabel != null) {
+				titleLabel.Dispose ();
+				titleLabel = null;
+			}
+
+			if (backgroundView != null) {
+				backgroundView.Dispose ();
+				backgroundView = null;
 			}
 		}
 	}

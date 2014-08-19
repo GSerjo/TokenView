@@ -104,4 +104,10 @@
     <InterfaceDefinition Include="MainStoryboard.storyboard" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\NSTokenView\NSTokenView.csproj">
+      <Project>{30F02CC7-2A69-4A23-AEAA-39E96F7D143B}</Project>
+      <Name>NSTokenView</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>
