@@ -25,7 +25,7 @@ namespace Sample
 
 		public override void ViewDidLoad ()
 		{
-			base.ViewDidLoad ();
+			base.ViewDidLoad (); 
 
 			tokenField.TokenDataSource = new TokenViewDataSource ();
 
