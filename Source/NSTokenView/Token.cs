@@ -5,7 +5,6 @@ using System.Drawing;
 
 namespace NSTokenView
 {
-	[Register("Token")]
 	public partial class Token : UIView
 	{
 		private bool _highlighted;

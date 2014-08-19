@@ -6,7 +6,6 @@ using MonoTouch.Foundation;
 
 namespace NSTokenView
 {
-	[Register ("BackspaceTextField")]
 	internal class BackspaceTextField : UITextField
 	{
 		[Export("initWithFrame:")]
