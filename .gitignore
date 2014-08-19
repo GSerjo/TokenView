@@ -1,0 +1,14 @@
+Out
+obj
+bin
+samples
+android
+.idea
+_ReSharper.*
+*.dotCover
+*.suo
+*.user
+*.Cache
+*.cache
+*.ncrunchsolution
+*.ncrunchproject
