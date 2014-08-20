@@ -2,7 +2,7 @@
 
 namespace NSTokenView
 {
-	public class TokenDelegate
+	public class TokenViewDelegate
 	{
 		public virtual void FilterToken (TokenView tokenField, string text)
 		{

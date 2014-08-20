@@ -2,7 +2,7 @@
 
 namespace NSTokenView
 {
-	public class TokenDataSource
+	public class TokenViewSource
 	{
 		public virtual int NumberOfTokens(TokenView tokenField)
 		{

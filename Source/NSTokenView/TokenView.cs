@@ -32,8 +32,8 @@ namespace NSTokenView
 		private UIColor _inputTextFieldTextColor;
 		private string _placeholderText;
 
-		private TokenDataSource _tokenDataSource = new TokenDataSource();
-		private TokenDelegate _tokenDelegate = new TokenDelegate();
+		private TokenViewSource _tokenDataSource = new TokenViewSource();
+		private TokenViewDelegate _tokenDelegate = new TokenViewDelegate();
 
 		public TokenView (IntPtr handle) : base(handle)
 		{
@@ -44,13 +44,13 @@ namespace NSTokenView
 		{
 		}
 
-		public TokenDelegate TokenDelegate
+		public TokenViewDelegate TokenDelegate
 		{
 			get { return _tokenDelegate; }
 			set { _tokenDelegate = value; }
 		}
 
-		public TokenDataSource TokenDataSource
+		public TokenViewSource TokenDataSource
 		{
 			get { return _tokenDataSource; }
 			set { _tokenDataSource = value; }

@@ -13,13 +13,21 @@ namespace Sample
 	partial class SampleViewController
 	{
 		[Outlet]
-		NSTokenView.TokenView tokenField { get; set; }
+		MonoTouch.UIKit.UITableView tokens { get; set; }
+
+		[Outlet]
+		NSTokenView.TokenView tokenView { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
-			if (tokenField != null) {
-				tokenField.Dispose ();
-				tokenField = null;
+			if (tokens != null) {
+				tokens.Dispose ();
+				tokens = null;
+			}
+
+			if (tokenView != null) {
+				tokenView.Dispose ();
+				tokenView = null;
 			}
 		}
 	}
