@@ -313,7 +313,7 @@ namespace NSTokenView
 			BecomeFirstResponder ();
 		}
 
-		public void DidTapToken(Token token)
+		internal void DidTapToken(Token token)
 		{
 			foreach (var item in _tokens)
 			{
