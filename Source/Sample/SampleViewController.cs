@@ -43,6 +43,7 @@ namespace Sample
 			tokenView.Layer.CornerRadius = 5;
 			tokenView.Layer.BorderColor = UIColor.LightTextColor.CGColor;
 			tokenView.PlaceholderText = "Enter a token";
+			tokenView.ColorScheme = new UIColor (62 / 255.0f, 149 / 255.0f, 206 / 255.0f, 1.0f);
 		}
 
 		private void InitTokenSource()
@@ -84,6 +85,12 @@ namespace Sample
 				_controller.ReloadData ();
 			}
 
+			public void ResetFilter ()
+			{
+				_nameSource = _initialNameSource;
+				_controller.ReloadData ();
+			}
+
 			public override UITableViewCell GetCell (UITableView tableView, NSIndexPath indexPath)
 			{
 				UITableViewCell cell = tableView.DequeueReusableCell (cellId);
@@ -117,26 +124,27 @@ namespace Sample
 		private sealed class  NameSelectorDelegate : TokenViewDelegate
 		{
 
-			private readonly TableSource _source;
+			private readonly TableSource _tableSource;
 			private List<string> _tokenSource;
-			private NSTokenView.TokenView _tokenView;
+			private SampleViewController _controller;
 
 			public NameSelectorDelegate (SampleViewController controller)
 			{
-				_source = controller._tableSource;
+				_tableSource = controller._tableSource;
 				_tokenSource = controller._tokenSource;
-				_tokenView = controller.tokenView;
+				_controller = controller;
 			}
 
 			public override void FilterToken (TokenView tokenField, string text)
 			{
-				_source.Filter (text);
+				_tableSource.Filter (text);
 			}
 
 			public override void DidEnterToken (TokenView tokenField, string text)
 			{
 				_tokenSource.Add (text);
-				_tokenView.ReloadData();
+				_tableSource.ResetFilter ();
+				_controller.tokenView.ReloadData();
 			}
 		}
 
@@ -160,6 +168,5 @@ namespace Sample
 				return _tokenSource.Count;
 			}
 		}
-
 	}
 }
