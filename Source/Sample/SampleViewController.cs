@@ -12,26 +12,32 @@ namespace Sample
 {
 	public partial class SampleViewController : UIViewController
 	{
+		private List<string> _nameSource = new List<string>();
 		private List<string> _tokenSource = new List<string>();
+		private NameSelectorDelegate _nameSelectorDelegate;
+		private NameSelectorSource _nameSelectorSource;
+		private TableSource _tableSource;
 
 		public SampleViewController (IntPtr handle) : base (handle)
 		{
+			_tableSource = new TableSource (this);
+			_nameSelectorSource = new NameSelectorSource (this);
+			_nameSelectorDelegate = new NameSelectorDelegate (this);
 		}
 
 		public override void ViewDidLoad ()
 		{
 			InitTokenSource ();
-			var tokenSource = new TableSource (this);
-			InitTokenView (tokenSource);
-			tokens.Source = tokenSource;
+			InitTokenView ();
+			tokens.Source = _tableSource;
 
 			base.ViewDidLoad (); 
 		}
 
-		private void InitTokenView(TableSource tokenSource)
+		private void InitTokenView()
 		{
-			tokenView.TokenDataSource = new NameSelectorSource ();
-			tokenView.TokenDelegate = new NameSelectorDelegate (tokenSource);
+			tokenView.TokenDataSource = _nameSelectorSource;
+			tokenView.TokenDelegate = _nameSelectorDelegate;
 
 			tokenView.SetupInit ();
 			tokenView.Layer.CornerRadius = 5;
@@ -43,22 +49,39 @@ namespace Sample
 		{
 			for (int i = 0; i < 30; i++)
 			{
-				_tokenSource.Add (string.Format ("Token: {0}", i));
+				_nameSource.Add (string.Format ("Token: {0}", i));
 			}
+		}
+
+		private void ReloadData()
+		{
+			DispatchQueue.MainQueue.DispatchAsync (() => tokens.ReloadData ());
 		}
 
 		private sealed class TableSource : UITableViewSource
 		{
 			private string cellId = "TableCell";
-			private List<string> _source;
-			private List<string> _initialSource;
+			private List<string> _nameSource;
+			private List<string> _initialNameSource;
+			private List<string> _tokenSource;
 			private readonly SampleViewController _controller;
 
 			public TableSource (SampleViewController controller)
 			{
-				_source = controller._tokenSource;
-				_initialSource = controller._tokenSource;
+				_nameSource = controller._nameSource;
+				_initialNameSource = controller._nameSource;
+				_tokenSource = controller._tokenSource;
 				_controller = controller;
+			}
+
+			public override void RowSelected (UITableView tableView, NSIndexPath indexPath)
+			{
+				var item = _nameSource [indexPath.Item];
+				_nameSource.Remove (item);
+				_initialNameSource.Remove (item);
+				_tokenSource.Add (item);
+				_controller.tokenView.ReloadData ();
+				_controller.ReloadData ();
 			}
 
 			public override UITableViewCell GetCell (UITableView tableView, NSIndexPath indexPath)
@@ -68,26 +91,26 @@ namespace Sample
 				{
 					cell = new UITableViewCell (UITableViewCellStyle.Default, cellId);
 				}
-				cell.TextLabel.Text = _source [indexPath.Row];
+				cell.TextLabel.Text = _nameSource [indexPath.Row];
 				return cell;
 			}
 
 			public override int RowsInSection (UITableView tableview, int section)
 			{
-				return _source.Count;
+				return _nameSource.Count;
 			}
 
 			public void Filter(string text)
 			{
 				if (string.IsNullOrWhiteSpace (text))
 				{
-					_source = _initialSource;
+					_nameSource = _initialNameSource;
 				} 
 				else
 				{
-					_source = _initialSource.Where (x => x.Contains(text)).ToList();
+					_nameSource = _initialNameSource.Where (x => x.Contains(text)).ToList();
 				}
-				DispatchQueue.MainQueue.DispatchAsync (() => _controller.tokens.ReloadData ());
+				_controller.ReloadData ();
 			}
 		}
 
@@ -95,28 +118,46 @@ namespace Sample
 		{
 
 			private readonly TableSource _source;
+			private List<string> _tokenSource;
+			private NSTokenView.TokenView _tokenView;
 
-			public NameSelectorDelegate (TableSource source)
+			public NameSelectorDelegate (SampleViewController controller)
 			{
-				_source = source;
+				_source = controller._tableSource;
+				_tokenSource = controller._tokenSource;
+				_tokenView = controller.tokenView;
 			}
 
 			public override void FilterToken (TokenView tokenField, string text)
 			{
 				_source.Filter (text);
 			}
+
+			public override void DidEnterToken (TokenView tokenField, string text)
+			{
+				_tokenSource.Add (text);
+				_tokenView.ReloadData();
+			}
 		}
 
 		private sealed class NameSelectorSource : TokenViewSource
 		{
+
+			private List<string> _tokenSource;
+
+			public NameSelectorSource (SampleViewController controller)
+			{
+				_tokenSource = controller._tokenSource;
+			}
+
 			public override string GetToken (TokenView tokenField, int index)
 			{
-				return string.Empty;
+				return _tokenSource[index];
 			}
 
 			public override int NumberOfTokens (TokenView tokenField)
 			{
-				return 0;
+				return _tokenSource.Count;
 			}
 		}
 

@@ -150,7 +150,7 @@ namespace NSTokenView
 			ReloadData ();
 		}
 
-		public void ReloadData()
+		public new void ReloadData()
 		{
 			bool inputFieldShouldBecomeFirstResponder = InputTextField.IsFirstResponder;
 			var removeSubviews = _scrollView.Subviews.ToList();
@@ -223,7 +223,7 @@ namespace NSTokenView
 			{
 				var title = TitleForTokenAtIndex (i);
 
-				var nibObjects = NSBundle.MainBundle.LoadNib("VENToken", this, null);
+				var nibObjects = NSBundle.MainBundle.LoadNib("Token", this, null);
 				var token = (Token)Runtime.GetNSObject(nibObjects.ValueAt(0));
 				token.SetupInit ();
 				token.ColorScheme = ColorScheme;
@@ -384,24 +384,33 @@ namespace NSTokenView
 		private sealed class VENBackspaceDelegate : UITextFieldDelegate
 		{
 
-			private TokenView _tokenField;
+			private TokenView _tokenView;
 
-			public VENBackspaceDelegate (TokenView tokenField)
+			public VENBackspaceDelegate (TokenView tokenView)
 			{
-				_tokenField = tokenField;
+				_tokenView = tokenView;
 			}
 				
 			public override void EditingStarted (UITextField textField)
 			{
-				if (textField == _tokenField.InputTextField)
+				if (textField == _tokenView.InputTextField)
 				{
-					_tokenField.UnhighlightAllTokens ();
+					_tokenView.UnhighlightAllTokens ();
 				}
+			}
+
+			public override bool ShouldReturn (UITextField textField)
+			{
+				if (!string.IsNullOrWhiteSpace (textField.Text))
+				{
+					_tokenView.TokenDelegate.DidEnterToken (_tokenView, textField.Text);
+				}
+				return false;
 			}
 
 			public override bool ShouldChangeCharacters (UITextField textField, NSRange range, string replacementString)
 			{
-				_tokenField.UnhighlightAllTokens ();
+				_tokenView.UnhighlightAllTokens ();
 				return true;
 			}
 		}

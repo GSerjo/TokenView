@@ -11,5 +11,9 @@ namespace NSTokenView
 		public virtual void DidDeleteTokenAtIndex(TokenView tokenField, int index)
 		{
 		}
+
+		public virtual void DidEnterToken(TokenView tokenField, string text)
+		{
+		}
 	}
 }
