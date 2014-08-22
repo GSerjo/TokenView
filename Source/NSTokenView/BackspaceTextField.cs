@@ -8,17 +8,18 @@ namespace NSTokenView
 {
 	internal class BackspaceTextField : UITextField
 	{
-		[Export("initWithFrame:")]
-		public BackspaceTextField(RectangleF frame) : base(frame)
-		{
+		private readonly IRemovableTextField _removableProtocol;
 
+		public BackspaceTextField(RectangleF frame, IRemovableTextField protocol) : base(frame)
+		{
+			_removableProtocol = protocol;
 		}
 
 		public override void DeleteBackward ()
 		{
-			Console.WriteLine ("DeleteBackward");
 			if (Text.Length == 0)
 			{ 
+				_removableProtocol.TextFieldDidEnterBackspace (this);
 			}
 			base.DeleteBackward ();
 		}

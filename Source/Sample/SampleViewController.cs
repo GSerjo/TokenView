@@ -135,16 +135,22 @@ namespace Sample
 				_controller = controller;
 			}
 
-			public override void FilterToken (TokenView tokenField, string text)
+			public override void FilterToken (TokenView tokenView, string text)
 			{
 				_tableSource.Filter (text);
 			}
 
-			public override void DidEnterToken (TokenView tokenField, string text)
+			public override void DidEnterToken (TokenView tokenView, string text)
 			{
 				_tokenSource.Add (text);
 				_tableSource.ResetFilter ();
 				_controller.tokenView.ReloadData();
+			}
+
+			public override void DidDeleteTokenAtIndex (TokenView tokenView, int index)
+			{
+				_tokenSource.RemoveAt (index);
+				tokenView.ReloadData ();
 			}
 		}
 
@@ -158,12 +164,12 @@ namespace Sample
 				_tokenSource = controller._tokenSource;
 			}
 
-			public override string GetToken (TokenView tokenField, int index)
+			public override string GetToken (TokenView tokenView, int index)
 			{
 				return _tokenSource[index];
 			}
 
-			public override int NumberOfTokens (TokenView tokenField)
+			public override int NumberOfTokens (TokenView tokenView)
 			{
 				return _tokenSource.Count;
 			}

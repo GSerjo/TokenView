@@ -9,7 +9,7 @@ using MonoTouch.ObjCRuntime;
 namespace NSTokenView
 {
 	[Register ("TokenView")]
-	public sealed class TokenView : UIView
+	public sealed class TokenView : UIView, IRemovableTextField
 	{
 		private UIScrollView _scrollView;
 		private List<Token> _tokens = new List<Token> ();
@@ -106,8 +106,8 @@ namespace NSTokenView
 			{
 				if (_inputTextField == null)
 				{
-					_inputTextField = new BackspaceTextField (RectangleF.Empty);
-					_inputTextField.Delegate = new VENBackspaceDelegate(this);
+					_inputTextField = new BackspaceTextField (RectangleF.Empty, this);
+					_inputTextField.Delegate = new BackspaceDelegate(this);
 					_inputTextField.KeyboardType = InputTextFieldKeyboardType;
 					_inputTextField.TextColor = InputTextFieldTextColor;
 					_inputTextField.Font = UIFont.FromName ("HelveticaNeue", 15.5f);
@@ -258,8 +258,8 @@ namespace NSTokenView
 
 		private void LayoutInvisibleTextField()
 		{
-			_invisibleTextField = new BackspaceTextField (RectangleF.Empty);
-			_invisibleTextField.Delegate = new VENBackspaceDelegate (this);
+			_invisibleTextField = new BackspaceTextField (RectangleF.Empty, this);
+			_invisibleTextField.Delegate = new BackspaceDelegate (this);
 			AddSubview (_invisibleTextField);
 		}
 
@@ -376,17 +376,37 @@ namespace NSTokenView
 			return TokenDataSource.NumberOfTokens (this);
 		}
 
-		private void TextFieldDidEnterBackspace(BackspaceTextField textField)
+		void IRemovableTextField.TextFieldDidEnterBackspace(BackspaceTextField textField)
 		{
 			Console.WriteLine ("TextFieldDidEnterBackspace");
+			bool removeToken = false;
+			if (_tokens.Count == 0)
+			{
+				return;
+			}
+			for (int index = 0; index < _tokens.Count; index++)
+			{
+				if (_tokens [index].Highlighted)
+				{
+					TokenDelegate.DidDeleteTokenAtIndex (this, index);
+					removeToken = true;
+					break;
+				}
+			}
+			if (!removeToken)
+			{
+				var token = _tokens.Last ();
+				token.Highlighted = true;
+			}
+			SetCursorVisibility ();
 		}
 
-		private sealed class VENBackspaceDelegate : UITextFieldDelegate
+		private sealed class BackspaceDelegate : UITextFieldDelegate
 		{
 
 			private TokenView _tokenView;
 
-			public VENBackspaceDelegate (TokenView tokenView)
+			public BackspaceDelegate (TokenView tokenView)
 			{
 				_tokenView = tokenView;
 			}

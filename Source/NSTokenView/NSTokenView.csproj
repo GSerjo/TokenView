@@ -47,6 +47,7 @@
     </Compile>
     <Compile Include="TokenViewDelegate.cs" />
     <Compile Include="TokenViewSource.cs" />
+    <Compile Include="IRemovableTextField.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
   <ItemGroup>
