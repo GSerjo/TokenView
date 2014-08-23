@@ -13,7 +13,6 @@ namespace NSTokenView
 
 		public Token (IntPtr handle) : base(handle)
 		{
-			Id = Guid.NewGuid ();
 		}
 
 		public UIColor ColorScheme
@@ -46,7 +45,6 @@ namespace NSTokenView
 			}
 		}
 		public Action<Token> OnDidTapToken { get; set; }
-		public Guid Id { get; private set; }
 
 		public void SetupInit()
 		{

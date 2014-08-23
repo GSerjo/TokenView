@@ -20,6 +20,8 @@ namespace NSTokenView
 		private const float DefaultTokenPadding = 5.0f;
 		private const float DefaultMinImputWidth = 80.0f;
 		private const float DefaultMaxHeight = 150.0f;
+		private const float HeightForToken = 30.0f;
+
 		private BackspaceTextField _invisibleTextField;
 		private BackspaceTextField _inputTextField;
 		private UIColor _colorScheme;
@@ -100,7 +102,7 @@ namespace NSTokenView
 			}
 		}
 
-		internal BackspaceTextField InputTextField
+		private BackspaceTextField InputTextField
 		{
 			get
 			{
@@ -150,22 +152,9 @@ namespace NSTokenView
 			ReloadData ();
 		}
 
-		public new void ReloadData()
+		public void ReloadData()
 		{
-			bool inputFieldShouldBecomeFirstResponder = InputTextField.IsFirstResponder;
-			var removeSubviews = _scrollView.Subviews.ToList();
-			foreach (var view in removeSubviews)
-			{
-				var token = view as Token;
-				if (token != null)
-				{
-					Console.WriteLine (token.Id);
-					token.RemoveFromSuperview ();
-				}
-			}
-
-			_scrollView.Hidden = false;
-			_tokens.Clear ();
+			ClearTokens ();
 				
 			float currentX = 0;
 			float currentY = 0;
@@ -174,9 +163,13 @@ namespace NSTokenView
 			LayoutInputTextFieldWithCurrentX (ref currentX, ref currentY);
 
 			AdjustHeightForCurrentY (currentY);
-			_scrollView.ContentSize = new SizeF (_scrollView.ContentSize.Width, currentY + HeightForToken ());
+
+			_scrollView.ContentSize = new SizeF (_scrollView.ContentSize.Width, currentY + HeightForToken);
+
 			UpdateInputTextField ();
 
+
+			bool inputFieldShouldBecomeFirstResponder = InputTextField.IsFirstResponder;
 			if (inputFieldShouldBecomeFirstResponder)
 			{
 				InputTextFieldBecomeFirstResponder ();
@@ -186,6 +179,22 @@ namespace NSTokenView
 				FocusInputTextField ();
 			}
 			InputTextFieldBecomeFirstResponder ();
+		}
+
+		private void ClearTokens()
+		{
+			var removeSubviews = _scrollView.Subviews.ToList();
+			foreach (var view in removeSubviews)
+			{
+				var token = view as Token;
+				if (token != null)
+				{
+					token.RemoveFromSuperview ();
+				}
+			}
+
+			_scrollView.Hidden = false;
+			_tokens.Clear ();
 		}
 
 		private string InputText()
@@ -208,11 +217,11 @@ namespace NSTokenView
 			if (inputTextFieldWidth < _minInputWidth)
 			{
 				inputTextFieldWidth = _scrollView.ContentSize.Width;
-				currentY += HeightForToken ();
+				currentY += HeightForToken;
 				currentX = 0;
 			}
 			InputTextField.Text = string.Empty;
-			InputTextField.Frame = new RectangleF (currentX, currentY + 1, inputTextFieldWidth, HeightForToken () - 1);
+			InputTextField.Frame = new RectangleF (currentX, currentY + 1, inputTextFieldWidth, HeightForToken - 1);
 			InputTextField.TintColor = ColorScheme;
 			_scrollView.AddSubview (InputTextField);
 		}
@@ -247,13 +256,7 @@ namespace NSTokenView
 				currentX += token.Frame.Width + _tokenPadding;
 				_scrollView.AddSubview (token);
 				_tokens.Add (token);
-				Console.WriteLine ("Id " + token.Id);
 			}
-		}
-
-		private float HeightForToken()
-		{
-			return 30.0f;
 		}
 
 		private void LayoutInvisibleTextField()
@@ -270,19 +273,16 @@ namespace NSTokenView
 				return;
 			}
 			InputTextField.BecomeFirstResponder();
-			if (TokenDelegate != null)
-			{
-			}
 		}
 
 		private void AdjustHeightForCurrentY(float currentY)
 		{
 			float height;
-			if (currentY + HeightForToken () > Frame.Height)
+			if (currentY + HeightForToken > Frame.Height)
 			{
-				if (currentY + HeightForToken () <= _maxHeight) 
+				if (currentY + HeightForToken <= _maxHeight) 
 				{
-					height = currentY + HeightForToken () + _verticalInset * 2;
+					height = currentY + HeightForToken + _verticalInset * 2;
 				}
 				else
 				{
@@ -291,9 +291,9 @@ namespace NSTokenView
 			}
 			else
 			{
-				if (currentY + HeightForToken () > _orifinalHeight) 
+				if (currentY + HeightForToken > _orifinalHeight) 
 				{
-					height = currentY + HeightForToken () + _verticalInset * 2;
+					height = currentY + HeightForToken + _verticalInset * 2;
 				} 
 				else 
 				{
@@ -331,6 +331,10 @@ namespace NSTokenView
 
 		private void UnhighlightAllTokens ()
 		{
+			if (_tokens.Count == 0)
+			{
+				return;
+			}
 			foreach (var token in _tokens)
 			{
 				token.Highlighted = false;
@@ -359,7 +363,7 @@ namespace NSTokenView
 		private void FocusInputTextField()
 		{
 			PointF contentOffset = _scrollView.ContentOffset;
-			float targetY = InputTextField.Frame.Y + HeightForToken () - _maxHeight;
+			float targetY = InputTextField.Frame.Y + HeightForToken - _maxHeight;
 			if (targetY > contentOffset.Y)
 			{
 				_scrollView.SetContentOffset (new PointF(contentOffset.X, targetY), false);
@@ -378,12 +382,11 @@ namespace NSTokenView
 
 		void IRemovableTextField.TextFieldDidEnterBackspace(BackspaceTextField textField)
 		{
-			Console.WriteLine ("TextFieldDidEnterBackspace");
-			bool removeToken = false;
 			if (_tokens.Count == 0)
 			{
 				return;
 			}
+			bool removeToken = false;
 			for (int index = 0; index < _tokens.Count; index++)
 			{
 				if (_tokens [index].Highlighted)
@@ -403,7 +406,6 @@ namespace NSTokenView
 
 		private sealed class BackspaceDelegate : UITextFieldDelegate
 		{
-
 			private TokenView _tokenView;
 
 			public BackspaceDelegate (TokenView tokenView)
