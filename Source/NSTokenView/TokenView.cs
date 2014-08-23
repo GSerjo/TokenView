@@ -331,10 +331,6 @@ namespace NSTokenView
 
 		private void UnhighlightAllTokens ()
 		{
-			if (_tokens.Count == 0)
-			{
-				return;
-			}
 			foreach (var token in _tokens)
 			{
 				token.Highlighted = false;
@@ -382,10 +378,6 @@ namespace NSTokenView
 
 		void IRemovableTextField.TextFieldDidEnterBackspace(BackspaceTextField textField)
 		{
-			if (_tokens.Count == 0)
-			{
-				return;
-			}
 			bool removeToken = false;
 			for (int index = 0; index < _tokens.Count; index++)
 			{
@@ -396,7 +388,7 @@ namespace NSTokenView
 					break;
 				}
 			}
-			if (!removeToken)
+			if (removeToken == false && _tokens.Count > 0)
 			{
 				var token = _tokens.Last ();
 				token.Highlighted = true;
