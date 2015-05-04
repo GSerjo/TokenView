@@ -2,8 +2,8 @@
 
 namespace NSTokenView
 {
-	internal interface IRemovableTextField
-	{
-		void TextFieldDidEnterBackspace(BackspaceTextField textField);
-	}
+    internal interface IRemovableTextField
+    {
+        void TextFieldDidEnterBackspace(BackspaceTextField textField);
+    }
 }
